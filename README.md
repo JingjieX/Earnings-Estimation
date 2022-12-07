@@ -479,7 +479,7 @@ The main function iterate 2000 times and give the following result:
 [Results](RESULTS_ALL.mat)
 
 <div align=center>
-<image src="github_pic/results.png" width=600 height=450>
+<image src="github_pic/results.png" width=400 height=200>
 </div>
 
 rho=0.9637, var_alpha=-2.0131, var_epsilon=-0.2232, var_v=6.8114		
@@ -497,7 +497,7 @@ The solid line is the cross-sectional variance of earnings, based upon PSID data
 </div>
 		
 ## 2.4 A 4-year panel example 		
-For completeness, here let's use a (4*4) submatrix to solve for the minimizer. 		
+Use a (4*4) submatrix to solve for the minimizer. 		
 The problem now is limited to a 4-year panel data, and we have the two matrices containing empirical moments and theoretical moments respectively as follow:		
 
 
