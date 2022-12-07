@@ -408,33 +408,35 @@ The matrix containing theoretical moments is also symmetric and as follow (refer
 </div>
 
 Note that matrix $\hat{M}$ is a symmetric toeplitz matrix. We can use the function in MatLab to construct it. And then vectorize it.
-And then we can define the objective function-the distance between empirical and theoretical matrices.
+And then we can define the objective function-the distance between empirical and theoretical matrices.		
+
+There are two programs: we first define the objective function 'myfun' containing 4 paramers rho, var_a, var_e, var_v, and then recall 'myfun' in the main program.
 
 ```shell
 
-function myobj=myfun(params,M_vectorized)
-%% M_vectorized: input, vectorized matrix M containing empirical moments
+function myobj=myfun(params)
+
+global M_vectorized
 
 rho=params(1);
 var_a=params(2);
 var_e=params(3);
 var_v=params(4);
 
-%%%%%%%%%%%%%%%%Construct a matrix M_hat containing theoretical moments%%%%%%%%%%%%%%%%
-%%r is the first row of M_hat
-r=[var_a+var_e+var_v var_a+rho*var_v var_a+rho^2*var_v var_a+rho^3*var_v var_a+rho^4*var_v var_a+rho^5*var_v var_a+rho^6*var_v var_a+rho^7*var_v var_a+rho^8*var_v var_a+rho^9*var_v var_a+rho^10*var_v var_a+rho^11*var_v var_a+rho^12*var_v var_a+rho^13*var_v var_a+rho^14*var_v var_a+rho^15*var_v var_a+rho^16*var_v var_a+rho^17*var_v var_a+rho^18*var_v var_a+rho^19*var_v var_a+rho^20*var_v var_a+rho^21*var_v var_a+rho^22*var_v var_a+rho^23*var_v var_a+rho^24*var_v var_a+rho^25*var_v var_a+rho^26*var_v var_a+rho^27*var_v var_a+rho^28*var_v var_a+rho^29*var_v var_a+rho^30*var_v var_a+rho^31*var_v var_a+rho^32*var_v var_a+rho^33*var_v var_a+rho^34*var_v var_a+rho^35*var_v var_a+rho^36*var_v var_a+rho^37*var_v var_a+rho^38*var_v var_a+rho^39*var_v var_a+rho^40*var_v var_a+rho^41*var_v var_a+rho^42*var_v var_a+rho^43*var_v var_a+rho^44*var_v] 
 
-M_hat=toeplitz(r);
+%%%%%%%%%%%%%%%%%%%%%%%Construct a matrix M_hat containing theoretical moments%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+r=[var_a+var_e+var_v var_a+rho*var_v var_a+rho^2*var_v var_a+rho^3*var_v var_a+rho^4*var_v var_a+rho^5*var_v var_a+rho^6*var_v var_a+rho^7*var_v var_a+rho^8*var_v var_a+rho^9*var_v var_a+rho^10*var_v var_a+rho^11*var_v var_a+rho^12*var_v var_a+rho^13*var_v var_a+rho^14*var_v var_a+rho^15*var_v var_a+rho^16*var_v var_a+rho^17*var_v var_a+rho^18*var_v var_a+rho^19*var_v var_a+rho^20*var_v var_a+rho^21*var_v var_a+rho^22*var_v var_a+rho^23*var_v var_a+rho^24*var_v var_a+rho^25*var_v var_a+rho^26*var_v var_a+rho^27*var_v var_a+rho^28*var_v var_a+rho^29*var_v var_a+rho^30*var_v var_a+rho^31*var_v var_a+rho^32*var_v var_a+rho^33*var_v var_a+rho^34*var_v var_a+rho^35*var_v var_a+rho^36*var_v var_a+rho^37*var_v var_a+rho^38*var_v var_a+rho^39*var_v var_a+rho^40*var_v var_a+rho^41*var_v var_a+rho^42*var_v var_a+rho^43*var_v var_a+rho^44*var_v];
+
+M_hat=toeplitz(r);  %%r is the first row of M_hat
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%Vectorize M_hat
 M_hat_vectorized=M_hat(:);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Define the objective function%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Diff=M_vectorized-M_hat_vectorized;  %%Subtract one from the other 
-
-myobj=sum(Diff.^2); %%Find the squares of each element, sum the squares in each column 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%Define the objective function
+Diff=M_vectorized-M_hat_vectorized;
+myobj=sum(Diff.^2);  %%Find the squares of each element, sum the squares in each column 
 
 end
 
@@ -450,35 +452,41 @@ Finally, perform the minimum distance estimation
 
 ```shell
 
-function [params,Fval]=MinDis(M_vectorized)
-%% THIS IS THE MAIN PROGRAM THAT PERFORMS THE MINIMUM DISTANCE ESTIMATION OF
-%% TRANSITORY INCOME SHOCKS.
-%% IT CALLES TWO FUNCTIONS NAMED loadMatrixM AND myobj
-%% INPUTS:VECTORIZED MATRIX M CONTAINING EMPIRICAL MOMENTS
+clear all;close all;clc;
 
-%% start with some initial guess X0;
+%%%%%%%%%%%%%%%%%%%%PERFORMS THE MINIMUM DISTANCE ESTIMATION%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THIS IS THE MAIN PROGRAM THAT PERFORMS THE MINIMUM DISTANCE ESTIMATION OF
+% TRANSITORY INCOME SHOCKS.
+% IT CALLES TWO FUNCTIONS NAMED loadMatrixM THAT NEEDS TO RESIDES IN THE SAME DIRECTORY AS THE CURRENT PROGRAM.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+M_vectorized = loadMatrixM;
+global M_vectorized  
+
+%% start with some initial guess X0
 X0=[0,0,0,0,0];
 
-%%Set options to obtain iterative display and use the 'quasi-newton' algorithm.
-
+%% Set options to obtain iterative display and use the 'quasi-newton' algorithm.
 options = optimoptions(@fminunc,'Display','iter','Algorithm','quasi-newton');
 
-%%starts at the point x0 and attempts to find a local minimum x of the function myfun 
-x=fminunc(myfun,X0,options) 
+%% fminunc is a toolbox provided by matLab to solve unconstrained minimization problems 
+[params,Fval]=fminunc(@myfun,X0,options);
 
-save RESULTS_ALL
-
-end
+save RESULTS_ALL;
 
 ```
+The main function iterate 2000 times and give the following result:
+[Results](RESULTS_ALL.mat)
 
-It gives a resulting rho=1 and some errors………… 
+<div align=center>
+<image src="github_pic/results.png" width=600 height=450>
+</div>
 
-Interpretation: The shock is permanent.    
+rho=0.9637, var_alpha=-2.0131, var_epsilon=-0.2232, var_v=6.8114		
 
-Have problems on using the fucntions fminunc.      					
-
-
+Interpretation: The shock is permanent.    		
+		
+		
 Let's see some results from Storesletten, Telmer and Yaron (2004):  		
 
 The solid line is the cross-sectional variance of earnings, based upon PSID data 1969-1992 which we can refer to since we are focusing on 1969-1993. The resulting parameter values are $\sigma^2_{\alpha} + \sigma^2_{\epsilon}=0.2735$, $\sigma^2_{\eta}=0.0166$ and $\rho=0.9989$.
@@ -617,6 +625,16 @@ The objective function:
 
 Intepretation:		
 The earnings shock is not permanent since we are using a very short data.
+
+
+# 3. Dofiles, matLab files and Outputs		
+Dofile for generating empirical moments: [Generate_empirical_moments.do](Generate_empirical_moments.do)		
+
+matLab file for generating theoretical moments, defining the objective function and perform minimizing distance: [matLab_Files.zip](matLab_Files.zip)		
+
+Access the results here [RESULTS_ALL.m](RESULTS_ALL.mat)		
+
+
 
 
 
