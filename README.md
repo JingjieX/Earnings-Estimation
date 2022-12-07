@@ -479,7 +479,7 @@ The main function iterate 2000 times and give the following result:
 [Results](RESULTS_ALL.mat)
 
 <div align=center>
-<image src="github_pic/results.png" width=400 height=200>
+<image src="github_pic/results.png" width=500 height=200>
 </div>
 
 rho=0.9637, var_alpha=-2.0131, var_epsilon=-0.2232, var_v=6.8114		
