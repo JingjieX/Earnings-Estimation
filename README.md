@@ -306,7 +306,7 @@ where $\alpha$, $\epsilon$ and $v$ are assumed to be uncorrelated and have zero 
 
 ## 2.2 Empirical moments
 
-We want to construct two $(J+1)$*$(J+1)$ symmetric matrices containing empirical moments and theoretical moments respectively.	
+We want to construct two $(J+1)$ * $(J+1)$ symmetric matrices containing empirical moments and theoretical moments respectively.	
 
 First, constrcut a matrix containing empirical moments:
 
