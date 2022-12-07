@@ -408,7 +408,7 @@ The matrix containing theoretical moments is also symmetric and as follow (refer
 </div>
 
 Note that matrix $\hat{M}$ is a symmetric toeplitz matrix. We can use the function in MatLab to construct it. And then vectorize it.
-This is the 
+And then we can define the objective function-the distance between empirical and theoretical matrices.
 
 ```shell
 
