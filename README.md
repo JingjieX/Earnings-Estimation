@@ -494,11 +494,11 @@ The problem now is limited to a 4-year panel data, and we have the two matrices 
 
 
 <div align=center>
-<img src="github_pic/MATRIX3-1.jpg" width="530" height="225">			
+<img src="github_pic/MATRIX3-1.jpeg.jpg" width="530" height="225">			
 </div>
 
 <div align=center>
-<img src="github_pic/MATRIX4-1.jpg" width="660" height="300">			
+<img src="github_pic/MATRIX4-1.jpeg.jpg" width="660" height="300">			
 </div>
 
 
