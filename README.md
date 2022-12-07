@@ -5,7 +5,7 @@ The data are drawn from the first 26 waves of the PSID. The labor earnings data 
 
 - The input STATA data file "ready_newdata.dta" essentially contains variables from the PSID's website. Only individuals in the SEO (non-random poverty sample) and the Latino subsample are excluded when downloading the data. Essentially no other sample cleaning or selection has been done up to this point. 
 ```shell
-
+ 
 clear
 
 use ready_newdata
