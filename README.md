@@ -664,4 +664,4 @@ The earnings shock is not permanent since we are using a very short data.
 [1] Guvenen, F., 2009. An empirical investigation of labor income processes. Review of Economic Dynamics 12, 58-79.     
 [2] Guvenen, F., 2009. Code and data files for "An Empirical Investigation of Labor Income Processes".         
 [3] Kjetil Storesletten, Christopher I.Telmer, Amir Yaron, 2004. Consumption and risk sharing over the life cycle. Journal of Monetary Economics 51, 609-633.        
-[4] Salvador ortigueira. Lecture notes for "Estimation of earnings processes".            
+[4] Salvador ortigueira. Lecture notes for "Estimation of earnings processes".             
