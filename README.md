@@ -481,7 +481,7 @@ The main function iterate 2000 times and give the following result:
 <image src="github_pic/results.png" width=600 height=200>
 </div>
 
-$\rho$=0.9637, $\sigma^2_{\alpha}=-2.0131, \sigma^2_{\epsilon}=-0.2232, \sigma^2_{v}=6.8114		
+$\rho$=0.9637, $\sigma^2_{\alpha}$=-2.0131, $\sigma^2_{\epsilon}$=-0.2232, $\sigma^2_{v}$=6.8114		
 
 Interpretation: The shock is permanent.		
 
@@ -519,7 +519,7 @@ save RESULTS_ALL;
 	
 ```
 
-The program gives a resulting $\rho$=0.9331 which is a little bit smaller than the previous one but with non-negative variances $\sigma^2_{\alpha}=0, \sigma^2_{\epsilon}=0, \sigma^2_{v}=5.0318	
+The program gives a resulting $\rho$=0.9331 which is a little bit smaller than the previous one but with non-negative variances $\sigma^2_{\alpha}$=0, $\sigma^2_{\epsilon}$=0, $\sigma^2_{v}$=5.0318	
 		
 Let's see some results from Storesletten, Telmer and Yaron (2004):  		
 
