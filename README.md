@@ -481,7 +481,7 @@ Interpretation: The shock is permanent.
 
 Results from Storesletten, Telmer and Yaron (2004): 	
 
-$\sigma^2_{\alpha} + \sigma^2_{\epsilon}=0.2735$, $\sigma^2_{\eta}=0.0166$ and $\rho=0.9989$.
+$\rho=0.9989$, $\sigma^2_{\alpha} + \sigma^2_{\epsilon}=0.2735$, $\sigma^2_{\eta}=0.0166$
 
 
 
