@@ -360,7 +360,7 @@ local j=ageinit
 ```
 
 - Filling the lower triangle of $M$
-- Note that M is symmetric so we can use math to filling the lower triangle
+- Note that $M$ is symmetric so we can use math to filling the lower triangle
 
 ```shell
 
@@ -374,7 +374,7 @@ export excel using "/Users/jingjiexu/Desktop/Earnings_Estimation_Jingjie/M.xlsx"
 
 ```
 
-- $M$ is a $(45*45)$ symmetric matrix containing empirical moments (variances and covariances of residual earnings) with its northeast and southwest missing:
+- $M$ is a $45*45$ symmetric matrix containing variances and covariances of residual earnings with its northeast and southwest missing:
 
 <div align=center>
 <img src="github_pic/Matrix_M.png" width="530" height="225">			
@@ -388,7 +388,7 @@ Constrcut a matrix $\hat{M}$ containing theoretical moments:
 <img src="github_pic/MATRIX2.png" width="500" height="225">			
 </div>
 
-$\hat{M}$ is also symmetric and as follow (referring to $eq (5)$ and $eq(6)$) under the assumption that the idiosyncratic components are transitory $i.i.d.$ shocks:
+$\hat{M}$ is also symmetric and as follow referring to $eq(5)$ and $eq(6)$ under the assumption that the idiosyncratic components are transitory $i.i.d.$ shocks:
 
 <div align=center>
 <img src="github_pic/MATRIX4.png" width="660" height="300">			
