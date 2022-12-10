@@ -396,11 +396,6 @@ $\hat{M}$ is also symmetric and as follow referring to $eq(5)$ and $eq(6)$ under
 
 Turn to matLab.
 
-There are 3 matLab programs in total: 
-- loadM.m loads matrix $M$ into matLab    
-- myfun.m defines the objective function   
-- Perform_minimizing_distance.m recalls myfun.m in and perform minimizing distance
-
 - loadM.m loads matrix $M$ into matLab 
 ```shell
 
