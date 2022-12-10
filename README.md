@@ -440,7 +440,7 @@ end
 
 ```
 
-- Perform_minimizing_distance.m recalls myfun.m in and perform minimizing distance
+- Perform minimizing distance
 
 ```shell
 
