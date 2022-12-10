@@ -421,7 +421,7 @@ var_a=params(2);
 var_e=params(3);
 var_v=params(4);
 
-%%%%%%Construct a matrix M_hat containing theoretical moments%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Construct a matrix M_hat containing theoretical moments%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 r=[var_a+var_e+var_v var_a+rho*var_v var_a+rho^2*var_v var_a+rho^3*var_v var_a+rho^4*var_v var_a+rho^5*var_v var_a+rho^6*var_v var_a+rho^7*var_v var_a+rho^8*var_v var_a+rho^9*var_v var_a+rho^10*var_v var_a+rho^11*var_v var_a+rho^12*var_v var_a+rho^13*var_v var_a+rho^14*var_v var_a+rho^15*var_v var_a+rho^16*var_v var_a+rho^17*var_v var_a+rho^18*var_v var_a+rho^19*var_v var_a+rho^20*var_v var_a+rho^21*var_v var_a+rho^22*var_v var_a+rho^23*var_v var_a+rho^24*var_v var_a+rho^25*var_v var_a+rho^26*var_v var_a+rho^27*var_v var_a+rho^28*var_v var_a+rho^29*var_v 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
 
 M_hat=toeplitz(r);   %%r is the first row of M_hat
@@ -449,39 +449,39 @@ clear all;close all;clc;
 M=loadM;
 global M
 
-% Start with some initial guess X0
+%% Start with some initial guess X0
 X0=[0,0,0,0];
 
-% params has positive values
+%% params has positive values
 lb=[0,0,0,0];
-% The probelmhas no upper bounds
+%% The probelmhas no upper bounds
 ub=[];
 
-% The problem has no linear constraints , so set those arguments to []
+%% The problem has no linear constraints , so set those arguments to []
 A=[];
 b=[];
 Aeq=[];
 beq=[];
 
-% Use fmincon since it's a constrained problem now
+%% Use fmincon since it's a constrained problem now
 params=fmincon(@myfun,X0,A,b,Aeq,beq,lb,ub);
 
-% Display in the order of rho, var_alpha, var_epsilon, var_v
+%% Display in the order of rho, var_alpha, var_epsilon, var_v
 disp(params)
 
 save RESULTS_ALL;
 
 ```
 
-Results:
+My results:
 
 $\rho=0.9266$, $\sigma^2_{\alpha}=0.0509$, $\sigma^2_{\epsilon}=-0.4580$, $\sigma^2_{v}=0.2249$		
 
 Interpretation: The shock is permanent.		
 
-Results from Storesletten, Telmer and Yaron (2004):  		
+Results from Storesletten, Telmer and Yaron (2004): 	
 
-The solid line is the cross-sectional variance of earnings, based upon PSID data 1969-1992 which we can refer to since we are focusing on 1969-1993. The resulting parameter values are $\sigma^2_{\alpha} + \sigma^2_{\epsilon}=0.2735$, $\sigma^2_{\eta}=0.0166$ and $\rho=0.9989$.
+$\sigma^2_{\alpha} + \sigma^2_{\epsilon}=0.2735$, $\sigma^2_{\eta}=0.0166$ and $\rho=0.9989$.
 
 
 
@@ -490,12 +490,12 @@ Download [ALLFILES](Earnings_Estimation_Jingjie.zip)
 	
 Note: Keep all under the same directory (folder). 
 
-Step 1: Run Construct_matrix_M.do 
-Change the path at the beginning to import the raw data
-Change the path at the end to save the results
+Step 1: Run Construct_matrix_M.do
+- Change the path at the beginning to import the raw data
+- Change the path at the end to save the results
 
 Step 2: Run Perform_minimizing_distance.m
-You get RESULTS_ALL.m
+- You get RESULTS_ALL.m
 
 
 # Reference
