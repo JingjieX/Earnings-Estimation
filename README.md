@@ -37,6 +37,8 @@ These criteria leave us with our main sample of 1270 individuals with at least t
 
 
 ## 1.3 Data Cleaning
+Stata
+
 - Set initial conditions
 
 ```shell
@@ -386,105 +388,77 @@ Constrcut a matrix $\hat{M}$ containing theoretical moments:
 <img src="github_pic/MATRIX2.png" width="500" height="225">			
 </div>
 
-The matrix containing theoretical moments is also symmetric and as follow (referring to $eq (5)$ and $eq(6)$) under the assumption that the idiosyncratic components are transitory (i.i.d.) shocks:
+$\hat{M}$ is also symmetric and as follow (referring to $eq (5)$ and $eq(6)$) under the assumption that the idiosyncratic components are transitory $i.i.d.$ shocks:
 
 <div align=center>
 <img src="github_pic/MATRIX4.png" width="660" height="300">			
 </div>
 
-Note that matrix $\hat{M}$ is a symmetric toeplitz matrix. We can use the function in MatLab to construct it. And then vectorize it.
-And then we can define the objective function-the distance between empirical and theoretical matrices.		
+Turn to matLab.
 
-There are two programs: we first define the objective function 'myfun' containing 4 paramers rho, var_a, var_e, var_v, and then recall 'myfun' in the main program.
+There are 3 matLab programs in total: 
+- loadM.m loads matrix $M$ into matLab    
+- myfun.m defines the objective function   
+- Perform_minimizing_distance.m recalls myfun.m in and perform minimizing distance
+
+- loadM.m loads matrix $M$ into matLab 
+```shell
+
+function [M]=loadM
+
+M = readmatrix('M.xlsx');
+
+end
+
+```
+
+- myfun.m defines the objective function 
+- Note that $\hat{M}$ is a symmetric toeplitz matrix. There's a function in MatLab to construct it. 
 
 ```shell
 
 function myobj=myfun(params)
 
-global M_vectorized
+global M
 
 rho=params(1);
 var_a=params(2);
 var_e=params(3);
 var_v=params(4);
 
+%%%%%%Construct a matrix M_hat containing theoretical moments%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+r=[var_a+var_e+var_v var_a+rho*var_v var_a+rho^2*var_v var_a+rho^3*var_v var_a+rho^4*var_v var_a+rho^5*var_v var_a+rho^6*var_v var_a+rho^7*var_v var_a+rho^8*var_v var_a+rho^9*var_v var_a+rho^10*var_v var_a+rho^11*var_v var_a+rho^12*var_v var_a+rho^13*var_v var_a+rho^14*var_v var_a+rho^15*var_v var_a+rho^16*var_v var_a+rho^17*var_v var_a+rho^18*var_v var_a+rho^19*var_v var_a+rho^20*var_v var_a+rho^21*var_v var_a+rho^22*var_v var_a+rho^23*var_v var_a+rho^24*var_v var_a+rho^25*var_v var_a+rho^26*var_v var_a+rho^27*var_v var_a+rho^28*var_v var_a+rho^29*var_v 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
 
-%%%%%%%%%%%%%%%%%%%%%%%Construct a matrix M_hat containing theoretical moments%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-r=[var_a+var_e+var_v var_a+rho*var_v var_a+rho^2*var_v var_a+rho^3*var_v var_a+rho^4*var_v var_a+rho^5*var_v var_a+rho^6*var_v var_a+rho^7*var_v var_a+rho^8*var_v var_a+rho^9*var_v var_a+rho^10*var_v var_a+rho^11*var_v var_a+rho^12*var_v var_a+rho^13*var_v var_a+rho^14*var_v var_a+rho^15*var_v var_a+rho^16*var_v var_a+rho^17*var_v var_a+rho^18*var_v var_a+rho^19*var_v var_a+rho^20*var_v var_a+rho^21*var_v var_a+rho^22*var_v var_a+rho^23*var_v var_a+rho^24*var_v var_a+rho^25*var_v var_a+rho^26*var_v var_a+rho^27*var_v var_a+rho^28*var_v var_a+rho^29*var_v var_a+rho^30*var_v var_a+rho^31*var_v var_a+rho^32*var_v var_a+rho^33*var_v var_a+rho^34*var_v var_a+rho^35*var_v var_a+rho^36*var_v var_a+rho^37*var_v var_a+rho^38*var_v var_a+rho^39*var_v var_a+rho^40*var_v var_a+rho^41*var_v var_a+rho^42*var_v var_a+rho^43*var_v var_a+rho^44*var_v];
+M_hat=toeplitz(r);   %%r is the first row of M_hat
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-M_hat=toeplitz(r);  %%r is the first row of M_hat
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%Vectorize M_hat
+%%Vectorize M and M_hat
+M_vectorized=M(:);
 M_hat_vectorized=M_hat(:);
 
 %%Define the objective function
 Diff=M_vectorized-M_hat_vectorized;
-myobj=sum(Diff.^2);  %%Find the squares of each element, sum the squares in each column 
+Diff(isnan(Diff))=0;   %%replace NaN with 0, otherwise the objective function is NaN
+myobj=sum(Diff.^2);   %%Find the squares of each element, sum the squares in each column 
 
 end
 
 ```
 
-The objective function is displayed as a 30-page function. 1/60 of the objective function is shown below:
-
-<div align=center>
-<img src="github_pic/OBJ.png" width="630" height="425">			
-</div>
-
-Finally, perform the minimum distance estimation
+- Perform_minimizing_distance.m recalls myfun.m in and perform minimizing distance
 
 ```shell
 
 clear all;close all;clc;
 
-%%%%%%%%%%%%%%%%%%%%PERFORMS THE MINIMUM DISTANCE ESTIMATION%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% THIS IS THE MAIN PROGRAM THAT PERFORMS THE MINIMUM DISTANCE ESTIMATION OF
-% TRANSITORY INCOME SHOCKS.
-% IT CALLES TWO FUNCTIONS NAMED loadMatrixM THAT NEEDS TO RESIDES IN THE SAME DIRECTORY AS THE CURRENT PROGRAM.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-M_vectorized = loadMatrixM;
-global M_vectorized  
-
-%% start with some initial guess X0
-X0=[0,0,0,0,0];
-
-%% Set options to obtain iterative display and use the 'quasi-newton' algorithm.
-options = optimoptions(@fminunc,'Display','iter','Algorithm','quasi-newton');
-
-%% fminunc is a toolbox provided by matLab to solve unconstrained minimization problems 
-[params,Fval]=fminunc(@myfun,X0,options);
-
-save RESULTS_ALL;
-
-```
-The main function iterate 2000 times and give the following result:
-[Results](RESULTS_ALL.mat)
-
-<div align=center>
-<image src="github_pic/results.png" width=600 height=200>
-</div>
-
-$\rho=0.9637$, $\sigma^2_{\alpha}=-2.0131$, $\sigma^2_{\epsilon}=-0.2232$, $\sigma^2_{v}=6.8114$		
-
-Interpretation: The shock is permanent.		
-
-The main program is later modified by adding a zero lower bound for variances to limit them to be non-negative, and fmincon is therefore used.
-	
-```shell
-	
-clear all;close all;clc;
-
-M_vectorized = loadMatrixM;
-
-global M_vectorized
+M=loadM;
+global M
 
 % Start with some initial guess X0
-X0=[0,0,0,0,0];
+X0=[0,0,0,0];
 
 % params has positive values
-lb=[,0,0,0];
+lb=[0,0,0,0];
 % The probelmhas no upper bounds
 ub=[];
 
@@ -501,205 +475,32 @@ params=fmincon(@myfun,X0,A,b,Aeq,beq,lb,ub);
 disp(params)
 
 save RESULTS_ALL;
-	
+
 ```
 
-The program gives a resulting $\rho$=0.9331 which is a little bit smaller than the previous one but with non-negative variances $\sigma^2_{\alpha}=0$, $\sigma^2_{\epsilon}=0$, $\sigma^2_{v}=5.0318$.	
-		
-Let's see some results from Storesletten, Telmer and Yaron (2004):  		
+Results:
+
+$\rho=0.9266$, $\sigma^2_{\alpha}=0.0509$, $\sigma^2_{\epsilon}=-0.4580$, $\sigma^2_{v}=0.2249$		
+
+Interpretation: The shock is permanent.		
+
+Results from Storesletten, Telmer and Yaron (2004):  		
 
 The solid line is the cross-sectional variance of earnings, based upon PSID data 1969-1992 which we can refer to since we are focusing on 1969-1993. The resulting parameter values are $\sigma^2_{\alpha} + \sigma^2_{\epsilon}=0.2735$, $\sigma^2_{\eta}=0.0166$ and $\rho=0.9989$.
 
 
-<div align=center>
-<img src="github_pic/Fig3.png" width="660" height="400">			
-</div>
-		
-## 2.4 A 4-year panel example 		
-Use a (4*4) submatrix to solve for the minimizer. 		
-The problem now is limited to a 4-year panel data, and we have the two matrices containing empirical moments and theoretical moments respectively as follow:		
-
-
-<div align=center>
-<img src="github_pic/MATRIX3-1.jpeg" width="530" height="225">			
-</div>
-
-<div align=center>
-<img src="github_pic/MATRIX4-1.jpeg" width="660" height="300">			
-</div>
-
-
-- Construct matrix $M$ containing empirical moments and vectorize it:
-
-```shell
-
-/*----------A SUBMATRIX CONTAINING EMPIRICAL MOMENTS-----------*/
-keep m20_20 m20_21 m20_22 m20_23 m21_20 m21_21 m21_22 m21_23 m22_20 m22_21 m22_22 m22_23 m23_20 m23_21 m23_22 m23_23
-
-/*----------SAVE EACH ROW AS A MATRIX-----------*/
-mkmat m20_*, matrix(R20) 
-mkmat m21_*, matrix(R21) 
-mkmat m22_*, matrix(R22)
-mkmat m23_*, matrix(R23)
-
-/*----------------HORIZONTALLY COMBINE THE MATRICES-------------------*/
-matrix M = [R20\R21\R22\R23]
-matrix list M
-
-svmat M
-outfile using M, nolabel replace wide
-
-/*----------VECTORIZE THE MATRIX CONTAINING EMPIRICAL MOMENTS----------*/
-mat M_vectorized = vec(M)
-mat l M_vectorized
-
-svmat M_vectorized
-outfile using M_vectorized, nolabel replace wide
-
-keep M_vectorized
-
-```
-
-```
-
-export excel using "/Users/jingjiexu/Desktop/509 earnings estimation/Earnings estimation/M_and_M_vectorized.xlsx", sheet("M_and_M_vectorized") firstrow(variables)
-
-```
-
-We now have $M$ and $M_{vectorized}$ as:
-
-<div align=center>
-<img src="github_pic/M.png" width="580" height="150">	
-</div>
-
-<div align=center>
-<img src="github_pic/M_vectorized.png" width="200" height="400">					
-</div>
-
-
-- Construct matrix $\hat{M}$ containing theoretical moments and vectorize it:
-
-```shell
-
-clear all; close all; clc; % clear the workspace
-
-%%%%%%Define the parameters
-syms rho var_a var_e var_v  
-
-%%%%%%Define the matrix containing teoretical moments
-M_hat = [var_a+var_e+var_v var_a+rho*var_v var_a+rho^2*var_v var_a+rho^3*var_v;
-         var_a+rho*var_v var_a+var_e+var_v var_a+rho*var_v var_a+rho^2*var_v;
-         var_a+rho^2*var_v var_a+rho*var_v var_a+var_e+var_v var_a+rho*var_v;
-         var_a+rho^3*var_v var_a+rho^2*var_v var_a+rho*var_v var_a+var_e+var_v];
-
-%%%%%%Vectorize M_hat
-M_hat_vectorized = M_hat(:);
-disp(M_hat_vectorized);
-
-%%%%%%Import M_vectorized as a column vector
-
-```
-
-We now have $\hat{M}$ and $\hat{M}_{vectorized}$ as:
-
-<div align=center>
-<img src="github_pic/M_hat.png" width="780" height="150">
-</div>
-
-
-<div align=center>
-<img src="github_pic/M_hat_vectorized.png" width="300" height="400">					
-</div>
-
-
-- The objective function
-
-```shell
-
-%%%%%%Subtract one from the other
-Diff = M_vectorized - M_hat_vectorized;
-
-%%%%%%Set the weighting matrix to identitiy matrix for simplicity
-W = eye(16);
-
-%%%%%%Define the objective function
-fun = Diff.' * W * Diff;
-
-```
-
-The objective function:
-
-<div align=center>
-<img src="github_pic/OBJ_44.png" width="760" height="300">					
-</div>
-
-
-
-- And the solver gives the results as follow:
-
-<div align=center>
-<img src="github_pic/solver_44.png" width="300" height="250">					
-</div>
-
-
-Intepretation:		
-The earnings shock is not permanent since we are using a very short data.
-
 
 # 3. README to run Dofiles, matLab programs and access the outputs
-Download everything here:[ALLFILES](Earnings_Estimation_Jingjie.zip)  
+Download [ALLFILES](Earnings_Estimation_Jingjie.zip)  
 	
-Note: Keep all of the files under the same directory (folder). (I mean if you don’t move them after download they will definitely in the same folder.)
+Note: Keep all under the same directory (folder). 
 
-Step 1: Change the path at the beginning and the end to import the data and to save the results. Run the Stata Dofile named Generate_empirical_moments.do and you get a Excel spreadsheet with empirical moments. 		
+Step 1: Run Construct_matrix_M.do 
+Change the path at the beginning to import the raw data
+Change the path at the end to save the results
 
-Step 2: Run the matLab code called Perform_minimizing_distance.m and you will get a file called RESULTS_ALL.m.		
-
-Step 3: Open RESULTS_ALL.m and check the results.		
-
-You don’t need to run the other two matLab programs, they will automatically be recalled when you run the main program. Just for explanation, I’m describing them in the following paragraph.
-
-There are three matLab programs, loadMatrixM.m is used to load the empirical moments generated by the Stata Dofile and used to create the vectorized matrix containing all empirical moments, which is matrix M.. myfun.m is used to define the objective function. Perform_minimizing_distance.m is the main program and the only one you need to run.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
+Step 2: Run Perform_minimizing_distance.m
+You get RESULTS_ALL.m
 
 
 # Reference
