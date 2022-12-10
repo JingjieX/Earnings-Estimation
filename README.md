@@ -475,7 +475,7 @@ save RESULTS_ALL;
 
 My results:
 
-$\rho=0.9266$, $\sigma^2_{\alpha}=0.0509$, $\sigma^2_{\epsilon}=-0.4580$, $\sigma^2_{v}=0.2249$		
+$\rho=0.9266$, $\sigma^2_{\alpha}=0.0509$, $\sigma^2_{\epsilon}=0.4580$, $\sigma^2_{v}=0.2249$		
 
 Interpretation: The shock is permanent.		
 
