@@ -485,7 +485,7 @@ $\rho=0.9989$, $\sigma^2_{\alpha} + \sigma^2_{\epsilon}=0.2735$, $\sigma^2_{\eta
 
 
 
-# 3. README to run Dofiles, matLab programs and access the outputs
+# 3. README
 Download [ALLFILES](Earnings_Estimation_Jingjie.zip)  
 	
 Note: Keep all under the same directory (folder). 
