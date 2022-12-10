@@ -1,16 +1,9 @@
 
 # 1. Data
 
-The data are drawn from the first 26 waves of the PSID. The labor earnings data are drawn from the first 26 waves of PSID covering the period from 1968 to 1993.
+The labor earnings data are drawn from the first 26 waves of PSID covering the period from 1968 to 1993.
 
-- The input STATA data file "ready_newdata.dta" essentially contains variables from the PSID's website. Only individuals in the SEO (non-random poverty sample) and the Latino subsample are excluded when downloading the data. Essentially no other sample cleaning or selection has been done up to this point. 
-```shell
- 
-clear
-
-use ready_newdata
-
-```
+- The input STATA data file "ready_newdata.dta" essentially contains variables from the PSID's website. No sample cleaning or selection has been done up to this point. 
 
 
 ## 1.1 Variable Definitions
@@ -45,7 +38,11 @@ These criteria leave us with our main sample of 1270 individuals with at least t
 
 ## 1.3 Data Cleaning
 - Set initial conditions
+
 ```shell
+sysuse auto, clear
+
+use "/Users/jingjiexu/Desktop/509 earnings estimation/Earnings estimation/Ready_newdata/ready_newdata.dta"
 
 gen Tinit=67
 gen Tlast=96
@@ -101,6 +98,7 @@ while `i'<=Tlast+1 {
 ```
 
 - awg: average growth rate of nominal wages
+- Note: awg96==rawg96 by definition of 96 as base year
 
 ```shell
 
@@ -135,8 +133,6 @@ gen awg94=11.32
 gen awg95=11.64
 gen awg96=12.03
 
-/*Note: awg96==rawg96 by definition of 96 as base year*/
-
 ```
 
 - Real wage rate = average growth rate of nominal wages / price level
@@ -162,8 +158,7 @@ while `i' < Tlast {
 
 - Generating dummy variables for families with head aged AGEINIT to AGELAST, with male head of family    
 
-- Following the bulk of the existing literature, the measure of labor market experience of an individual use
-is “potential” experience defined as (age − max(years of schooling, 12) − 6). 
+- Following the bulk of the existing literature, the measure of labor market experience of an individual use is “potential” experience defined as (age − max(years of schooling, 12) − 6). 
    - Although, ideally, it would be preferable to use a measure of actual experience, constructing a reliable measure using PSID data is not straightforward because it requires either observing individuals for all years since they enter the labor market which would substantially reduce the sample size or relying on retrospective questions that ask workers to recall how many years they have worked since entering labor market, which may not be reliable.
 
 
@@ -221,18 +216,7 @@ display k
 
 ```
     
-The original dataset is a wide data          
- - A wide format contains values that do not repeat in the first column.          
- - A long format contains values that do repeat in the first column.   
-
-and we sometimes want to convert it into a panel data: 
-
-<div align=center>
-<img src="github_pic/original_wide.png" width="416" height="255">	&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp 
-<img src="github_pic/panel.png" width="416" height="255"/>
-</div>
-
-We can first convert the original wide data into a standard long data，and transform the long data into a panel data:
+Convert the original wide data into a standard long data，and transform the long data into a panel data:
 
 <div align=center>
 <img src="github_pic/standard_long.png" width="416" height="300">	&nbsp &nbsp  &nbsp &nbsp &nbsp &nbsp 
@@ -242,6 +226,7 @@ We can first convert the original wide data into a standard long data，and tran
 - Convert data into long form for panel implementation      
 
 ```shell
+
 reshape long age agehd agedum expr hdedcn hdlbin hdwg rhdwg grade hwkhrs id labdum rhdlbin lnrhdlbin numfam relh seqdum seqno sexdum sexhd, i(idno) j(year)
 
 drop if year < Tinit | year==67
@@ -251,11 +236,18 @@ tsset idno year
 
 ```
 
-- Save the cleaned data
+- Generate year dummies
 
 ```shell
 
-save "/Users/jingjiexu/Desktop/509 earnings estimation/Earnings estimation/ready_newdata_cleaned.dta"
+tab year, gen(yrdum)
+local i=0
+local j=Tinit
+while `i' < (Tlast-Tinit) {
+      local i = `i'+1
+      local j = `j'+1
+      rename yrdum`i' yrdum`j'
+} 
 
 ```
 
@@ -271,29 +263,12 @@ $h$<sub>$t$</sub>: number of hours worked
 $e$<sup>$f$(X<sub>$i,j,t$</sub>)</sup>: predictable individual labor efficiency   
 $X$<sub>$i,j,t$</sub>: demographic observable and predictable variables (age, gender, education, time dummy, etc.)    
 $y$<sub>$i,j,t$</sub>: stochastic component of earnings   
-$f$: time invariant function of observables $X$<sub>$i,j,t$</sub>     
-
+$f$: time invariant function of observables $X$<sub>$i,j,t$</sub>  		
 
 
 Take logs in the equation above, we get
 ![Model](github_pic/2.png)
 Run a gression and we obtain residuals *y<sub>i,j,t</sub>*. We now need to specify a structure for these residuals.
-
-- Generate residuals
-
-```shell
-
-gen residual=.
-local i=ageinit
-	 while `i'<= agelast{
-		disp "agehd=`i'"
-		quietly reg lnrhdlbin agehd expr if seqno*labdum*agedum*sexdum==1 & agehd==`i'
-		predict resid`i', resid
-		replace residual=resid`i' if seqno*labdum*agedum*sexdum==1 & agehd==`i'
-	local i = `i'+1
-}
-
-```
 
 The statistical model for residual *log* earnings is following a time-invariant model
 ![Model](github_pic/34.png)
@@ -304,98 +279,108 @@ where $\alpha$, $\epsilon$ and $v$ are assumed to be uncorrelated and have zero 
 ![Model](github_pic/56.png)
 
 
+- Generate residuals
+
+```shell
+
+quietly reg lnrhdlbin agehd expr yrdum* if seqno*labdum*agedum*sexdum==1 
+predict resid, residuals
+
+local j=ageinit
+	 while `j'<= agelast{
+	 	gen resid`j'=.
+		replace resid`j'=resid if seqno*labdum*agedum*sexdum==1 & agehd ==`j' /*---For those who satisfies the selection critiria, we label individual residuals at each age--*/ 
+		
+		local k=0
+		while `k'<=`j'-ageinit{
+			
+			gen resid`j'f`k'=.   
+			replace resid`j'f`k'=f`k'.resid`j'  /*---Performing forward time series operation to get variables such that we can calculate covariances--*/
+	
+		local k=`k'+1	
+	}
+		
+	 local j = `j'+1
+}
+
+```
+
+
 ## 2.2 Empirical moments
 
-We want to construct two $(J+1)$ * $(J+1)$ symmetric matrices containing empirical moments and theoretical moments respectively.	
-
-First, constrcut a matrix containing empirical moments:
-
-<div align=center>
-<img src="github_pic/MATRIX1.png" width="500" height="225">			
-</div>
-
-
-- The following loop is used to obtain sample moments
-
-```diff
-
-/*---------------Time invariant model specification---------------------------*/
-
-local j=ageinit
-	while `j'<= agelast{
-		local n=0
-		while `n'<= agelast -`j'{
-			
-- Eg:			local `j1'=`j'+1
-
-+			local jn=`j'+`n'  //`jn' is used to label y_i,j+n as yi`jn'
-			
-- Eg:			gen yi`j'_yi`j1'=.
-- Eg:			replace yi`j'_yi`j1'=resid`j'*resid`j1'    //y_ij*y_i,j+1
-
-+			gen yi`j'_yi`jn'=.
-+			replace yi`j'_yi`jn'=resid`j'*resid`jn'  //the product y_j*y_j+n
-						
-- Eg:			egen m_`j'_1=mean(yi`j'_yi`j1') 
-			
-+			egen m`j'_`jn'=mean(yi`j'_yi`jn')  /*m`j'_`jn': the covariance of residual earnings between age j and j+n individuals*/
-		
-			if `n'!=0{
-				gen m`jn'_`j'=m`j'_`jn'
-			}
-			
-			local n = `n'+1   /* Matrix M is symmetric*/
-		}		
-
-		local j = `j'+1
-		
-}
-
-```
-
-```shell
-
-keep m*_*
-duplicates drop
-
-```
-
-- Now we have $m_{j,j+n}$ for all possible $j$ and $n$.
-- We can convert the empirical moments variables to a matrix
-	- Now we have 45 （1*45）matrices $R_{20}$, $R_{21}$, $R_{22}$ …… $R_{64}$. 
-	- Eg: $R_{20}$ =[ $m_{20,20}$, $m_{20,21}$, $m_{20,22}$, $m_{20,23}$  ……  $m_{20,64}$ ]
-
-- Save each row as a matrix 
-
-```shell
-local j=ageinit
-	while `j'<= agelast{
-		mkmat m`j'_*, matrix(R`j')
-		
-	local `j'=`j'+1	
-}
-
-```
-
-- Horizontally conbine the matrices to obtain a matrix containing empirical moments and vectorize it
-
-```shell
-
-mat M=[R*]
-M_vectorized=M(:);
-
-```
-
-- $M$ is now a (45*45) symmetric matrix containing empirical moments (variances and covariances of residual earnings):
-
+Constrcut a matrix $M$ containing empirical moments:
 
 <div align=center>
 <img src="github_pic/MATRIX3.png" width="530" height="225">			
 </div>
 
 
+- Initialize $M$ as a square matrix containing zeros
+
+```shell
+
+local d = agelast-ageinit+1  //45
+matrix M_Utri = J(`d',`d',0)  
+
+```
+
+- Filling the upper triangle of $M$
+
+```shell
+
+local j=ageinit
+	 while `j'<= agelast{
+
+			local n=0
+			while `n'<=agelast-`j'{
+				
+				local jn=`j'+`n'
+				
+				egen countobs_for_resid`jn'f`n' = total(!missing(resid`jn'f`n'))
+				/*For some resid`jn'f`n', there may be no observations becasue there are no such n years apart records. For example for age group 64 years old, there are no more than 28 non-concecutive records. That's why the northeast and southeast of matrix M are missing*/
+									
+				if countobs_for_resid`jn'f`n' ~= 0 {
+					matrix accum m=resid`j' resid`jn'f`n',noconstant deviations
+					matrix m=m/(r(N)-1)  //sample covariances
+					matrix M_Utri[`j'-(ageinit-1),`jn'-(ageinit-1)]=m[1,2]  //ageinit=20
+				}
+				
+				else if countobs_for_resid`jn'f`n' == 0{
+				matrix M_Utri[`j'-(ageinit-1),`jn'-(ageinit-1)]=.  //ageinit=20	
+				}
+					
+			local n=`n'+1	
+		}
+	
+	local j = `j'+1
+}
+
+```
+
+- Filling the lower triangle of $M$
+- Note that M is symmetric so we can use math to filling the lower triangle
+
+```shell
+
+mat M_Ltri=M_Utri'
+mat M =M_Utri+M_Ltri
+mat l M,nohalf
+svmat M
+
+keep M*
+export excel using "/Users/jingjiexu/Desktop/Earnings_Estimation_Jingjie/M.xlsx", sheet("M") firstrow(variables)
+
+```
+
+- $M$ is a (45*45) symmetric matrix containing empirical moments (variances and covariances of residual earnings) with its northeast and southwest missing:
+
+<div align=center>
+<img src="github_pic/Matrix_M.png" width="530" height="225">			
+</div>
+
+
 ## 2.3 Theoretical Moments
-We need to constrcut a matrix containing theoretical moments as well:
+Constrcut a matrix $/hat{M}$ containing theoretical moments:
 
 <div align=center>
 <img src="github_pic/MATRIX2.png" width="500" height="225">			
