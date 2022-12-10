@@ -254,7 +254,7 @@ while `i' < (Tlast-Tinit) {
 ```
 
 # 2. Estimation based on a time-invariant model (Storesletten, Telmer and Yaron (2004))
-## 2.1 Residuals
+## 2.1 The model
 
 The first step is to remove the predictable component of labor earnings and then specify a process for residual earnings.
 ![Model](github_pic/1.png)
