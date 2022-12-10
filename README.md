@@ -33,7 +33,7 @@ The individual
 (v) has hourly labor earnings more than $W$<sub>$min$</sub> and less than $W$<sub>$max$</sub>, where we set $W$<sub>$min$</sub> to <span>$</span>2 and $W$<sub>$max$</sub> to \$400 in 1993 and adjust them for previous years using the average growth rate of nominal wages obtained from BLS,     
 (vi) worked for `more than 520 hours (10 hours per week)` and `less than 5110 hours (14 hours a day, everyday)`.     
 
-These criteria leave us with our main sample of 1270 household headers with at least twenty years of data on each.      
+These criteria leave us with our main sample of 1270 individuals with at least twenty years of data on each.      
 
 
 ## 1.3 Data Cleaning
@@ -372,7 +372,7 @@ export excel using "/Users/jingjiexu/Desktop/Earnings_Estimation_Jingjie/M.xlsx"
 
 ```
 
-- $M$ is a (45*45) symmetric matrix containing empirical moments (variances and covariances of residual earnings) with its northeast and southwest missing:
+- $M$ is a $(45*45)$ symmetric matrix containing empirical moments (variances and covariances of residual earnings) with its northeast and southwest missing:
 
 <div align=center>
 <img src="github_pic/Matrix_M.png" width="530" height="225">			
@@ -380,7 +380,7 @@ export excel using "/Users/jingjiexu/Desktop/Earnings_Estimation_Jingjie/M.xlsx"
 
 
 ## 2.3 Theoretical Moments
-Constrcut a matrix $/hat{M}$ containing theoretical moments:
+Constrcut a matrix $\hat{M}$ containing theoretical moments:
 
 <div align=center>
 <img src="github_pic/MATRIX2.png" width="500" height="225">			
